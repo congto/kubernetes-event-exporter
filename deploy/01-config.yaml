@@ -5,13 +5,21 @@ metadata:
   namespace: monitoring
 data:
   config.yaml: |
-    logLevel: warn
-    logFormat: json
+    logLevel: debug
+    logFormat: pretty
     metricsNamePrefix: event_exporter_
+    receivers:
+      - name: "dump"
+        file:
+          path: "/dev/stdout"
+          layout: {}
+      - name: "victorialogs"
+        loki:
+          url: "http://172.16.66.106:9428/insert/loki/api/v1/push"
+          streamLabels:
+            source: kubernetes-event-exporter
     route:
       routes:
         - match:
             - receiver: "dump"
-    receivers:
-      - name: "dump"
-        stdout: {}
+            - receiver: "victorialogs"
